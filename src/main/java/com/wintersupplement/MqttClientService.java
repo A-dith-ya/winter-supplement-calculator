@@ -29,15 +29,16 @@ public class MqttClientService {
         client.subscribe("BRE/calculateWinterSupplementInput/" + this.topicId, (topic, msg) -> {
             String payload = new String(msg.getPayload());
             System.out.println("Received message: " + payload);
-            
+
             WinterSupplementInput winterSupplementInput = objectMapper.readValue(payload, WinterSupplementInput.class);
-            publishMessage();
+            publishMessage(winterSupplementInput);
         });
         System.out.println("Subscribed to topic: " + this.topicId);
     }
 
-    public void publishMessage() throws MqttException, JsonProcessingException  {
-        WinterSupplementOutput winterSupplementOutput = new WinterSupplementOutput(this.topicId, false, 0, 0, 0);
+    public void publishMessage(WinterSupplementInput winterSupplementInput) throws MqttException, JsonProcessingException  {
+        RuleEngine ruleEngine = new RuleEngine(winterSupplementInput);
+        WinterSupplementOutput winterSupplementOutput = ruleEngine.calculateWinterSupplementOutput();
         
         String outputJson = objectMapper.writeValueAsString(winterSupplementOutput);
         MqttMessage msg = new MqttMessage(outputJson.getBytes());
