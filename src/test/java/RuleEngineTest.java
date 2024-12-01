@@ -47,7 +47,7 @@ public class RuleEngineTest {
     }
 
     @Test
-    public void TestSinglePersonWithChildren() {
+    public void testSinglePersonWithChildren() {
         WinterSupplementInput input = new WinterSupplementInput("1", 1, "single", true);
         RuleEngine ruleEngine = new RuleEngine(input);
         WinterSupplementOutput output = ruleEngine.calculateWinterSupplementOutput();
@@ -73,6 +73,31 @@ public class RuleEngineTest {
     @Test
     public void testCoupleWithChildren() {
         WinterSupplementInput input = new WinterSupplementInput("1", 30, "couple", true);
+        RuleEngine ruleEngine = new RuleEngine(input);
+        WinterSupplementOutput output = ruleEngine.calculateWinterSupplementOutput();
+    
+        assertTrue(output.getIsEligible());
+        assertEquals(120, output.getBaseAmount(), 0);
+        assertEquals(600, output.getChildrenAmount(), 0);
+        assertEquals(720, output.getSupplementAmount(), 0);
+    }
+
+    // Boundary Value Testing
+    @Test
+    public void testNegativeNumberOfChildren() {
+        WinterSupplementInput input = new WinterSupplementInput("1", -1, "couple", true);
+        RuleEngine ruleEngine = new RuleEngine(input);
+        WinterSupplementOutput output = ruleEngine.calculateWinterSupplementOutput();
+    
+        assertFalse(output.getIsEligible());
+        assertEquals(0, output.getBaseAmount(), 0);
+        assertEquals(0, output.getChildrenAmount(), 0);
+        assertEquals(0, output.getSupplementAmount(), 0);
+    }
+
+    @Test
+    public void testNumberOfChildrenAboveMax() {
+        WinterSupplementInput input = new WinterSupplementInput("1", 31, "couple", true);
         RuleEngine ruleEngine = new RuleEngine(input);
         WinterSupplementOutput output = ruleEngine.calculateWinterSupplementOutput();
     
